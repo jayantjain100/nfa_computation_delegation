@@ -1,3 +1,4 @@
+# testing.py
 from nfa import NFA
 import socket
 from socket_sending import receive_object 
@@ -5,11 +6,6 @@ from socket_sending import send_object
 from encryption import encrypt
 from encryption import decrypt
 from encryption import hash_func
-import argparse
-
-parser = argparse.ArgumentParser(description='server that computes encoded NFAs')
-parser.add_argument('--port', metavar = 'port', type = int, default = 12345, help='port number, default is 12345')
-args = parser.parse_args()
 
 def compute(gt, hashes, final_hashes, start_label):
 	#isko bas ek input milta hai at a time and yeh uske sath deal karke ans bhejta hai
@@ -69,26 +65,11 @@ def compute(gt, hashes, final_hashes, start_label):
 	return(False, None)
 
 
-if __name__ == '__main__':
-	#main func
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	# port = 12345
-	s.bind(('', args.port))
-	#empty strings means that accepts connections from everywhere
-	s.listen(10)
-	while(True):
-		#connect to one person, answer query and disconnect
-		c, addr = s.accept()	 
-		print ('Got connection from', addr) 
-		#recieve garbled input
-		# received = c.recv(1024)
-		gnfa = receive_object(c)
-		print('recieved garbled nfa from Verifier' )
-		ans = compute(gnfa[0], gnfa[1], gnfa[2], gnfa[3])
-		# send a thank you message to the client.
-		dict1 = {True:'Accepting', False:'Not Accepting'} 
-		print('prover computed ', dict1[ans[0]] )
-		send_object(c, ans) 
-		# Close the connection with the client 
-		c.close() 
 
+# my_nfa = NFA(3, ['a', 'b'], {'a': {0:[1]}, 'b':{1:[2]}} , [2], 0)
+my_nfa = NFA(5, ['a', 'b'], {'a':{0:[1,2], 4:[3]}, 'b':{0:[3], 1:[1,4]}, 'eps':{2:[3,1], 3:[2]}}, [4])
+
+#garble_nfa
+(gnfa, final_labels) = my_nfa.garble('ab', 3)
+
+ans = compute(gnfa[0], gnfa[1], gnfa[2], gnfa[3])
