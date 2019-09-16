@@ -7,6 +7,8 @@ from encryption import encrypt
 from encryption import decrypt
 import os
 import numpy as np
+from cryptography.fernet import Fernet
+
 
 class NFA:
 	def __init__(self,
@@ -43,7 +45,7 @@ class NFA:
 		#calls the graphviz module whith appropriate args
 		pass
 
-	def garble(self, input_string, security_param = 256):
+	def garble(self, input_string, security_param = 32):
 		#produces the garbling corresponding to a  
 		# therefore returns ((garbled_tables, hashes, final_hashes),(L_l of F for the verifier to confirm))
 		input_len = len(input_string)
