@@ -3,15 +3,17 @@ from nfa import NFA
 from verifier import invoke_verifier
 import numpy as np
 
-NUM_TRIALS = 1
+NUM_TRIALS = 10
 
 if __name__ == '__main__':
 	
 	# invoke_prover()
-	my_nfa = NFA(5, ['a', 'b'], {'a':{0:[1,2], 4:[3]}, 'b':{0:[3], 1:[1,4]}, 'eps':{2:[3,1], 3:[2]}}, [4])
-	input_string = 'abababbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba'
-	# known_nfa = my_nfa.get_similar_nfa(input_string)
-	known_nfa = my_nfa
+	my_nfa = NFA(3, ['a', 'b'], {'a': {0:[1]}, 'b':{1:[2]}} , [2], 0)
+	my_nfa.complete()
+	input_string = 'abbb'
+	# my_nfa = NFA(5, ['a', 'b'], {'a':{0:[1,2], 4:[3]}, 'b':{0:[3], 1:[1,4]}, 'eps':{2:[3,1], 3:[2]}}, [4])
+	known_nfa = my_nfa.get_similar_nfa(input_string)
+	# known_nfa = my_nfa
 
 	indexes = [0 for i in range(NUM_TRIALS)] + [1 for i in range(NUM_TRIALS)]
 
