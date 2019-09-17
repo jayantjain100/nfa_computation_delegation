@@ -45,6 +45,10 @@ class NFA:
 		#calls the graphviz module whith appropriate args
 		pass
 
+	def get_similar_nfa(self, input_string):
+		new_final_states = self.final_states
+		return NFA(self.num_states, self.alphabet, self.delta, new_final_states, self.start_state)
+
 	def garble(self, input_string, security_param = 32):
 		#produces the garbling corresponding to a  
 		# therefore returns ((garbled_tables, hashes, final_hashes),(L_l of F for the verifier to confirm))
@@ -109,7 +113,5 @@ class NFA:
 		return ((garbled_tables, hashes, final_hashes, L[0][self.start_state]), (final_labels))
 
 
-
-
-
-
+	def compute(self, string):
+		return True

@@ -68,7 +68,7 @@ def compute(gt, hashes, final_hashes, start_label):
 
 	return(False, None)
 
-
+# def invoke_prover():
 if __name__ == '__main__':
 	#main func
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -76,19 +76,23 @@ if __name__ == '__main__':
 	s.bind(('', args.port))
 	#empty strings means that accepts connections from everywhere
 	s.listen(10)
+
 	while(True):
 		#connect to one person, answer query and disconnect
 		c, addr = s.accept()	 
 		print ('Got connection from', addr) 
 		#recieve garbled input
 		# received = c.recv(1024)
-		gnfa = receive_object(c)
-		print('recieved garbled nfa from Verifier' )
-		ans = compute(gnfa[0], gnfa[1], gnfa[2], gnfa[3])
-		# send a thank you message to the client.
-		dict1 = {True:'Accepting', False:'Not Accepting'} 
-		print('prover computed ', dict1[ans[0]] )
-		send_object(c, ans) 
-		# Close the connection with the client 
-		c.close() 
+		gnfas = receive_object(c)
+		print('recieved garbled nfas from Verifier' )
+		to_send = []
+		for gnfa in gnfas:
+			ans = compute(gnfa[0], gnfa[1], gnfa[2], gnfa[3])
+			# send a thank you message to the client.
+			dict1 = {True:'Accepting', False:'Not Accepting'} 
+			print('prover computed ', dict1[ans[0]] )
+			to_send.append(ans)	
+		send_object(c, to_send) 
+	# Close the connection with the client 
+	c.close() 
 

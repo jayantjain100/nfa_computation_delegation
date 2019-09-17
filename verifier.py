@@ -17,12 +17,19 @@ parser.add_argument('--port', metavar = 'port', type = int, default = 12345, hel
 
 args = parser.parse_args()
 
-if __name__ == '__main__':
+def invoke_verifier(nfas, input_string, indexes):
 	# my_nfa = NFA(3, ['a', 'b'], {'a': {0:[1]}, 'b':{1:[2]}} , [2], 0)
 	# my_nfa = NFA(4, ['a', 'b'], {'a': {1:[2]}, 'b':{2:[3]}, 'eps':{0:[1], 3:[1]}} , [3], 0)
-	my_nfa = NFA(5, ['a', 'b'], {'a':{0:[1,2], 4:[3]}, 'b':{0:[3], 1:[1,4]}, 'eps':{2:[3,1], 3:[2]}}, [4])
-	#garble_nfa
-	(gnfa, final_labels) = my_nfa.garble('abababbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba')
+	# my_nfa = NFA(5, ['a', 'b'], {'a':{0:[1,2], 4:[3]}, 'b':{0:[3], 1:[1,4]}, 'eps':{2:[3,1], 3:[2]}}, [4])
+	# 'abababbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba'
+	# garble_nfa
+	to_send = []
+	corresponding_final_labels = []
+	for ind in indexes:
+		my_nfa = nfas[ind]
+		(gnfa, final_labels) = my_nfa.garble(input_string)
+		to_send.append(gnfa)
+		corresponding_final_labels.append(final_labels)
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	# port = 45000
@@ -31,16 +38,20 @@ if __name__ == '__main__':
 
 	#create nfa
 
-	send_object(s, gnfa)
+	send_object(s, to_send)
 
 	# while True:
 	# 	pass	
-	ans = receive_object(s)
+	received_ans = receive_object(s)
 
-	if(not ans[0]):
-		print("NO, BUT UNSURE")
-	elif(ans[0] and verify_ans(ans[1], final_labels)):
-		print("YES CONFIRMED")
-	else:
-		print("WRONG PROOF")
+	final_ans = []
+	for ind in range(len(received_ans)):
+		ans = received_ans[ind]
+		if(not ans[0]):		# no, but unsure
+			final_ans.append(False)
+		elif(ans[0] and verify_ans(ans[1], corresponding_final_labels[ind])):		# yes, confirmed
+			final_ans.append(True)
+		else:	# wrong proof
+			final_ans.append(False)
 
+	return final_ans
